@@ -1,4 +1,4 @@
-﻿using MarsFramework.Config;
+using MarsFramework.Config;
 using MarsFramework.Global;
 using NUnit.Framework;
 using OpenQA.Selenium;
@@ -6,8 +6,6 @@ using OpenQA.Selenium.Support.UI;
 using SeleniumExtras.PageObjects;
 using System;
 using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace MarsFramework.Pages
 {
@@ -18,37 +16,37 @@ namespace MarsFramework.Pages
             PageFactory.InitElements(Global.GlobalDefinitions.driver, this);
         }
 
-       // Click on Manage Listings Link
+        // Click on Manage Listings Link
         [FindsBy(How = How.LinkText, Using = "Manage Listings")]
         private IWebElement manageListingsLink { get; set; }
 
-     //   View the listing
+        //   View the listing
         [FindsBy(How = How.XPath, Using = "(//i[@class='eye icon'])[1]")]
         private IWebElement view { get; set; }
 
-       // Delete the listing
+        // Delete the listing
         [FindsBy(How = How.XPath, Using = "//table[1]/tbody[1]")]
         private IWebElement delete { get; set; }
 
-     //   Edit the listing
+        //   Edit the listing
         [FindsBy(How = How.XPath, Using = "(//i[@class='outline write icon'])[1]")]
         private IWebElement edit { get; set; }
 
         internal void ActiveToggleWorking()
         {
-           // Populate the Excel Sheet
+            // Populate the Excel Sheet
             GlobalDefinitions.ExcelLib.PopulateInCollection(Base.ManageListingPath, "ManageListings");
             manageListingsLink.Click();
 
-          //  Finding the skill added recently into manage listing by EnterShareSkill function
-          //   Clicking the toggle active toggle button and check if it is updated in the listing
+            //  Finding the skill added recently into manage listing by EnterShareSkill function
+            //   Clicking the toggle active toggle button and check if it is updated in the listing
             int rowNum = 2;
             GlobalDefinitions.ExcelLib.PopulateInCollection(Base.ShareSkillPath, "ShareSkill");
             GlobalDefinitions.WaitForElement(GlobalDefinitions.driver, By.XPath("//*[@id='listing-management-section']"), 10);
             var ExpectedTitle = GlobalDefinitions.ExcelLib.ReadData(rowNum, "Title");
             var ExpectedDescription = GlobalDefinitions.ExcelLib.ReadData(rowNum, "Description");
             var ExpectedCategory = GlobalDefinitions.ExcelLib.ReadData(rowNum, "Category");
-            Thread.Sleep(2000);
+            GlobalDefinitions.WaitForElement(GlobalDefinitions.driver, By.XPath("//*[@class='ui striped table']"), 10);
             IList<IWebElement> ListingTableRow = GlobalDefinitions.driver.FindElements(By.XPath("//*[@class='ui striped table']/tbody/tr"));
 
             var row = ListingTableRow.Count;
@@ -71,6 +69,7 @@ namespace MarsFramework.Pages
                     break;
                 }
             }
+            GlobalDefinitions.WaitForElement(GlobalDefinitions.driver, By.XPath("//div[@class='ns-box-inner']"), 10);
             string VerifyAction = "//div[@class='ns-box-inner']";
             IWebElement AlertBoxMessage = GlobalDefinitions.driver.FindElement(By.XPath(VerifyAction));
             string Message = AlertBoxMessage.Text;
@@ -83,22 +82,22 @@ namespace MarsFramework.Pages
             {
                 Assert.That(Message, Does.Contain("Service has been activated"));
             }
-          
+
 
         }
 
-         internal void DeleteListing()
+        internal void DeleteListing()
         {
-         //   Populate the Excel Sheet
+            //   Populate the Excel Sheet
             GlobalDefinitions.ExcelLib.PopulateInCollection(Base.ManageListingPath, "ManageListings");
             manageListingsLink.Click();
-
-          //  Finding the skill added recently into manage listing by EnterShareSkill function and deleting
-             int rowNum = 2;
+            GlobalDefinitions.WaitForElement(GlobalDefinitions.driver, By.XPath("//*[@class='ui striped table']"), 10);
+            //  Finding the skill added recently into manage listing by EnterShareSkill function and deleting
+            int rowNum = 2;
             GlobalDefinitions.WaitForElement(GlobalDefinitions.driver, By.XPath("//*[@id='listing-management-section']"), 10);
             var ExpectedTitle = GlobalDefinitions.ExcelLib.ReadData(rowNum, "Title");
             var Deleteaction = GlobalDefinitions.ExcelLib.ReadData(rowNum, "Deleteaction");
-            Thread.Sleep(3000);
+
             IList<IWebElement> ListingTableRow = GlobalDefinitions.driver.FindElements(By.XPath("//*[@class='ui striped table']/tbody/tr"));
 
             var row = ListingTableRow.Count;
@@ -133,12 +132,13 @@ namespace MarsFramework.Pages
             //Populate the Excel Sheet
             GlobalDefinitions.ExcelLib.PopulateInCollection(Base.ManageListingPath, "ManageListings");
             manageListingsLink.Click();
-
-           // Finding the skill added recently into manage listing by EnterShareSkill function and deleting
-            int rowNum = 2;
             GlobalDefinitions.WaitForElement(GlobalDefinitions.driver, By.XPath("//*[@id='listing-management-section']"), 10);
+
+            // Finding the skill added recently into manage listing by EnterShareSkill function and deleting
+            int rowNum = 2;
+            GlobalDefinitions.WaitForElement(GlobalDefinitions.driver, By.XPath("//*[@class='ui striped table']"), 10);
             var ExpectedTitle = GlobalDefinitions.ExcelLib.ReadData(rowNum, "Title");
-             IList<IWebElement> ListingTableRow = GlobalDefinitions.driver.FindElements(By.XPath("//*[@class='ui striped table']/tbody/tr"));
+            IList<IWebElement> ListingTableRow = GlobalDefinitions.driver.FindElements(By.XPath("//*[@class='ui striped table']/tbody/tr"));
             var row = ListingTableRow.Count;
             for (var i = 1; i <= row; i++)
             {
@@ -148,25 +148,10 @@ namespace MarsFramework.Pages
                 {
 
                     Assert.Fail("Listing detail not deleted");
+                    break;
                 }
-                else
-                {
-                    Assert.Pass("Listing detail deleted" );
-
-                }
-
             }
         }
     }
-
-
-
-
-
-
-
-
-
-
 }
 
