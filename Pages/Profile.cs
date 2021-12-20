@@ -1,9 +1,8 @@
-﻿using MarsFramework.Global;
+using MarsFramework.Global;
 using NUnit.Framework;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.PageObjects;
 using OpenQA.Selenium.Support.UI;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace MarsFramework
@@ -192,7 +191,7 @@ namespace MarsFramework
         private IWebElement EditAvailability { get; set; }
 
         //Click on Availability Time dropdown
-        [FindsBy(How = How.Name, Using = "availabiltyType")]
+        [FindsBy(How = How.XPath, Using = "//*[@name='availabiltyType']")]
         private IWebElement Availability { get; set; }
 
         //Click on Edit availability hour button
@@ -200,7 +199,7 @@ namespace MarsFramework
         private IWebElement EditAvailableHour { get; set; }
 
         //Click on Hour dropdown
-        [FindsBy(How = How.Name, Using = "availabiltyHour")]
+        [FindsBy(How = How.XPath, Using = "//*[@name='availabiltyHour']")]
         private IWebElement AvailabilityHour { get; set; }
 
         //Click on Edit Earn Target button
@@ -208,7 +207,7 @@ namespace MarsFramework
         private IWebElement EarnTargetEdit { get; set; }
 
         //Click enter target
-        [FindsBy(How = How.Name, Using = "availabiltyTarget")]
+        [FindsBy(How = How.XPath, Using = "//*[@name='availabiltyTarget']")]
         private IWebElement EarnTarget { get; set; }
 
 
@@ -235,9 +234,8 @@ namespace MarsFramework
             int rowNum = 2;
 
             // Enter User Name
-            Thread.Sleep(2000);
+            Task.WaitAll(Task.Delay(2000));
             EditName.Click();
-            Thread.Sleep(2000);
             FirstName.Clear();
             LastName.Clear();
             FirstName.SendKeys(GlobalDefinitions.ExcelLib.ReadData(rowNum, "FirstName"));
@@ -246,6 +244,7 @@ namespace MarsFramework
             SaveName.Click();
 
             //Enter availability
+            Task.WaitAll(Task.Delay(1000));
             EditAvailability.Click();
             new SelectElement(Availability).SelectByText(GlobalDefinitions.ExcelLib.ReadData(rowNum, "AvailabilityType"));
 
@@ -253,15 +252,15 @@ namespace MarsFramework
             Task.WaitAll(Task.Delay(1000));
             EditAvailableHour.Click();
             new SelectElement(AvailabilityHour).SelectByText(GlobalDefinitions.ExcelLib.ReadData(rowNum, "AvailabilityHours"));
-            Task.WaitAll(Task.Delay(1000));
 
             ////Enter Earn target
+            Task.WaitAll(Task.Delay(1000));
             EarnTargetEdit.Click();
             new SelectElement(EarnTarget).SelectByText(GlobalDefinitions.ExcelLib.ReadData(rowNum, "EarnTarget"));
-            GlobalDefinitions.driver.Navigate().Refresh();
+           // GlobalDefinitions.driver.Navigate().Refresh();
 
             // Enter Description
-            Task.WaitAll(Task.Delay(1000));
+            Task.WaitAll(Task.Delay(3000));
             EditDescription.Click();
             EnterDescription.Clear();
             EnterDescription.SendKeys(GlobalDefinitions.ExcelLib.ReadData(rowNum, "Description"));
@@ -271,14 +270,12 @@ namespace MarsFramework
 
         internal void VerifyEditProfile()
         {
-            GlobalDefinitions.driver.Navigate().Refresh();
-            // Populate the data saved in Excel to Collection
+           // Populate the data saved in Excel to Collection
             GlobalDefinitions.ExcelLib.PopulateInCollection(Base.ExcelPath, "Profile");
-            GlobalDefinitions.WaitForElement(GlobalDefinitions.driver, By.XPath("//*[@id='account-profile-section']"), 10);
-            int rowNum = 2;
-            
+             int rowNum = 2;
 
             //Verify Name
+            Task.WaitAll(Task.Delay(1000));
             string ExpectedFirstName = GlobalDefinitions.ExcelLib.ReadData(rowNum, "FirstName").ToString();
             string ExpectedLastName = GlobalDefinitions.ExcelLib.ReadData(rowNum, "LastName").ToString();
             string ExpectedName = ExpectedFirstName + " " + ExpectedLastName;
